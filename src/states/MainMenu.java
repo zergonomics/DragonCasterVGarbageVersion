@@ -2,19 +2,31 @@ package states;
 
 import java.awt.event.KeyEvent;
 
+import buttons.stateChangeButtons.CombatButton;
 import actors.BaseObject;
-import actors.Button;
 
+/**
+ * Main menu state
+ * Title screen and relevant buttons
+ * 
+ * @author KevinWa
+ *
+ */
 @SuppressWarnings("serial")
 public class MainMenu extends State{
 	
 	public MainMenu() {
 		super();
 		
+		// Adding in the objects
+		BaseObject titleImage = new BaseObject("Images/titlescreen.png").x(400).y(200);
+		CombatButton startButton = (CombatButton) new CombatButton("Images/startbutton.png").x(400).y(300);
+		CombatButton combatButton = (CombatButton) new CombatButton("Images/combatbutton.png").x(400).y(350);
+		
 		// Load in all objects needed
-		objects.put("Title Image", new BaseObject("Images/titlescreen.png").x(400).y(200));
-		objects.put("Start Button", new Button("Images/startbutton.png").x(400).y(300));
-		objects.put("Combat", new Button("Images/combatbutton.png").x(400).y(350));
+		objects.add(titleImage);
+		objects.add(startButton);
+		objects.add(combatButton);
 	}
 
 	@Override
@@ -28,5 +40,5 @@ public class MainMenu extends State{
 	}
 
 	@Override
-	public void update() {}
+	public void stateLoop() {}
 }

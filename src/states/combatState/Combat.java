@@ -1,8 +1,16 @@
 package states.combatState;
 
+import java.util.List;
+
 import states.State;
 import actors.Actor;
+import actors.BaseObject;
 
+/**
+ * This is the combat state
+ * @author Kevin
+ *
+ */
 @SuppressWarnings("serial")
 public class Combat extends State {
 	
@@ -28,6 +36,41 @@ public class Combat extends State {
 		// Load objects (buttons and menus) here
 	}
 	
+	/**
+	 * Returns all of the objects contained
+	 * in the combat state
+	 * This needs to be altered so that
+	 * draw order is used:
+	 * 		The objects are sorted into
+	 * 		a temporary list based on
+	 * 		draw priority and then the
+	 * 		temporary list is returned
+	 */
+	@Override
+	public List<BaseObject> getObjects() {
+		List<BaseObject> temp = objects;
+
+		for(Tile[] row : tiles) {
+			for(Tile tile : row) {
+				temp.add(tile);
+			}
+		}
+		for(Actor entity : entities) {
+			temp.add(entity);
+		}
+		
+		return temp;
+	}
+	
+	/**
+	 * This should be called during the game loop
+	 * (it's just the game loop for the current state)
+	 * 
+	 * In this one we loop through each character
+	 * and get input for human characters and use
+	 * AI otherwise
+	 */
+	@Override
 	public void stateLoop() {
 		numEntities = entities.length;
 		Actor currentEntity = entities[currentEntityNum];
@@ -50,7 +93,7 @@ public class Combat extends State {
 		numTilesHigh = t[0].length;
 		tiles = new Tile[numTilesWide][numTilesHigh];
 		
-		int distanceFromSide = (int)(screenWidth - (numTilesWide * TILEWIDTH)) / 2;
+		int distanceFromSide = (int)(screenWidth - ((numTilesWide - 1) * TILEWIDTH)) / 2;
 		int distanceFromTop = (int)(screenHeight / 3);
 		
 		// * Please note these may be reversed
@@ -68,20 +111,7 @@ public class Combat extends State {
 			}
 		}
 	}
-	
-	@Override
-	public Actor[] getActors() {
-		return entities;
-	}
-	
-	@Override
-	public Tile[][] getTiles() {
-		return tiles;
-	}
 
 	@Override
 	public void useInput(int input) {}
-
-	@Override
-	public void update() {}
 }

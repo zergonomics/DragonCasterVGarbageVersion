@@ -21,6 +21,14 @@ public class Actor extends BaseObject {
 	private int level;
 	private int action;
 
+	
+	/**
+	 * Two constructors for the actor.
+	 * This one lets you create an actor without
+	 * giving it stats.
+	 * 
+	 * @param path		file path to the image sheet
+	 **/
 	public Actor(String path) {
 		super(path);
 		health = new VarStat(10);
@@ -34,6 +42,12 @@ public class Actor extends BaseObject {
 		action = 0;
 	}
 	
+	/**
+	 * This one will probably be changed into a builder pattern
+	 * so you don't have to put so many attributes all at once.
+	 * Maybe that's better, maybe worse. All I know is that this
+	 * takes longer than I have patience for.
+	 */
 	public Actor (int h, int m, int sh, int d, int sp, String path) {
 		super(path);
 		health = new VarStat(h);

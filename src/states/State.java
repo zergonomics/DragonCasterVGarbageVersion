@@ -1,39 +1,36 @@
 package states;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JPanel;
 
-import states.combatState.Tile;
-import actors.Actor;
 import actors.BaseObject;
 
+/**
+ * Abstract class for states
+ * 
+ * @author Kevin
+ *
+ */
 @SuppressWarnings("serial")
 public abstract class State extends JPanel{
 
-	Map<String, BaseObject> objects;
+	// Overall list of objects (buttons, characters, ect.)
+	// within the state
+	protected List<BaseObject> objects;
 	
 	// Constructor
 	public State() {
-		objects = new HashMap<String, BaseObject>();
+		objects = new ArrayList<BaseObject>();
 	}
 
 	public abstract void useInput(int input);
-	
-	// To be overwritten
-	public abstract void update();
 
-	public Map<String, BaseObject> getObjects() {
+	public List<BaseObject> getObjects() {
 		return objects;
 	}
 
-	// Does nothing here
-	public Actor[] getActors() {
-		return null;
-	}
-
-	public Tile[][] getTiles() {
-		return null;
-	}
+	// This is the update loop
+	public abstract void stateLoop();
 }

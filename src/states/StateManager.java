@@ -10,17 +10,23 @@ import java.awt.event.MouseMotionListener;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.Map;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import states.combatState.Combat;
-import states.combatState.Tile;
-import actors.Actor;
+import constants.Constants;
+import buttons.Button;
 import actors.BaseObject;
-import actors.Button;
 
+/** This is the main program thing
+ * 
+ * 	This thing changes the program states,
+ *  gets input to send to the current state,
+ *  and does the graphics painting
+ * @author Kevin
+ *
+ */
 @SuppressWarnings("serial")
 public class StateManager extends JPanel{
 	
@@ -29,9 +35,6 @@ public class StateManager extends JPanel{
 	
 	boolean gameover = false;
 	boolean DEBUGGING = true;
-	
-	static int GAMEWIDTH = 800;
-	static int GAMEHEIGHT = 600;
 
 	/**
 	 * Stack for the game states. Each state is
@@ -67,6 +70,7 @@ public class StateManager extends JPanel{
 			// Starting Time
 			beginTime = System.nanoTime();
 			
+			stateStack.getFirst().stateLoop();
 			repaint();
 			
 			// End Time and sleep to retain consistent FPS (Hopefully)
@@ -80,14 +84,14 @@ public class StateManager extends JPanel{
 	
 	public void checkHovered(MouseEvent e) {
 		State tempState = stateStack.getFirst();
-		Map<String, BaseObject> tempList = tempState.getObjects();
+		List<BaseObject> tempList = tempState.getObjects();
 		
 		int l, r, t, b;
 		
 		int x = e.getX();
 		int y = e.getY();
 		
-		for(BaseObject tempObj : tempList.values()) {
+		for(BaseObject tempObj : tempList) {
 			l = tempObj.getImageLeftX();
 			r = tempObj.getImageRightX();
 			t = tempObj.getImageTopY();
@@ -109,17 +113,14 @@ public class StateManager extends JPanel{
 	
 	public void checkClicked(MouseEvent e) {
 		State tempState = stateStack.getFirst();
-		Map<String, BaseObject> tempList = tempState.getObjects();
+		List<BaseObject> tempList = tempState.getObjects();
 		
 		int l, r, t, b;
 		
 		int x = e.getX();
 		int y = e.getY();
 		
-		for(Map.Entry<String, BaseObject> entry : tempList.entrySet()) {
-			BaseObject tempObj = entry.getValue();
-			String tempName = entry.getKey();
-			
+		for(BaseObject tempObj : tempList) {			
 			l = tempObj.getImageLeftX();
 			r = tempObj.getImageRightX();
 			t = tempObj.getImageTopY();
@@ -132,13 +133,7 @@ public class StateManager extends JPanel{
 				// shouldn't be problems.
 				((Button) tempObj).getPressed();
 				if(x > l && x < r && y > t && y < b) {
-					((Button) tempObj).setPressed();
-					if (tempName == "Combat") {
-						Actor[] actors = new Actor[1];
-						actors[0] = new Actor("Images/basiccharacter.png");
-						actors[0].x(300).y(400);
-						stateStack.push(new Combat(GAMEWIDTH, GAMEHEIGHT, new int[][]{{0, 0, 0, 0}, {0, 0, 0, 0}}, actors));
-					}
+					((Button) tempObj).press(stateStack);
 					break;
 				}
 			}
@@ -195,42 +190,17 @@ public class StateManager extends JPanel{
 
 	/**
 	 * Apparently this is called automatically. What a load of bull.
-	 * 
-	 * The code below is less well done than a side of raw beef.
 	 */
 	@Override
 	public void paint(Graphics g) {
 		// Takes all of the objects to be drawn (SHOULD be sorted
 		// by draw priority) and displays based on their top left corner
-		Map<String, BaseObject> tempList = stateStack.getFirst().getObjects();		
-		for(BaseObject tempObj : tempList.values()) {
+		List<BaseObject> tempList = stateStack.getFirst().getObjects();		
+		for(BaseObject tempObj : tempList) {
 			g.drawImage(tempObj.getImage(), tempObj.getImageLeftX(), tempObj.getImageTopY(), this);
 			if(DEBUGGING) {
 				g.setColor(Color.RED);
 				g.drawRect(tempObj.getImageLeftX(), tempObj.getImageTopY(), tempObj.imageWidth(), tempObj.imageHeight());
-			}
-		}
-		
-		// Draws characters and entities
-		if (stateStack.getFirst() instanceof Combat) {
-			Tile[][] tempTiles = stateStack.getFirst().getTiles();
-			Actor[] tempActors = stateStack.getFirst().getActors();
-			for(Tile[] tilerow : tempTiles) {
-				for(Tile tempTile : tilerow) {
-					g.drawImage(tempTile.getImage(), tempTile.getImageLeftX(), tempTile.getImageTopY(), this);
-					if(DEBUGGING) {
-						g.setColor(Color.RED);
-						g.drawRect(tempTile.getImageLeftX(), tempTile.getImageTopY(), tempTile.imageWidth(), tempTile.imageHeight());
-					}
-
-				}
-			}
-			for(Actor entity : tempActors) {
-				g.drawImage(entity.getImage(), entity.getImageLeftX(), entity.getImageTopY(), this);
-				if(DEBUGGING) {
-					g.setColor(Color.RED);
-					g.drawRect(entity.getImageLeftX(), entity.getImageTopY(), entity.imageWidth(), entity.imageHeight());
-				}
 			}
 		}
 	}
@@ -241,7 +211,7 @@ public class StateManager extends JPanel{
 		
 		JFrame frame = new JFrame("Dragon Caster V");
 		frame.add(manager);
-		frame.setSize(GAMEWIDTH, GAMEHEIGHT);
+		frame.setSize(Constants.GAMEWIDTH, Constants.GAMEHEIGHT);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 		

@@ -6,10 +6,17 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+/**
+ * This class is for anything that needs
+ * and image and coordinates
+ * Needs rewriting. Probably.
+ * @author Kevin
+ *
+ */
 public class BaseObject {
 
 	// x and y are center points
-	BufferedImage image;
+	protected BufferedImage image;
 	int drawPriority;
 	int x, y;
 
